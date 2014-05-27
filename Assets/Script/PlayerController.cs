@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour {
 	Ray ray;
 	RaycastHit hit;
 	private bool CanJump = false;
+	private bool CanDie = false;
 
     public CharacterController controller;
     public float groundSpeed = 20;
@@ -40,7 +41,17 @@ public class PlayerController : MonoBehaviour {
         this.motion_ = Vector3.zero;
     }
 
-
+	void OnGUI()
+	{
+		if (CanDie)
+		{
+			GUI.Label(new Rect(10 ,10 ,100,100), "You die !");
+			if (GUI.Button(new Rect (10, 30, 100,50),"Retry"))
+			{
+				Application.LoadLevel("Model");
+			}
+		}
+	}
 	
 	void LateUpdate() 
     {
@@ -106,8 +117,11 @@ public class PlayerController : MonoBehaviour {
 	void OnTriggerEnter(Collider other) {
 		if (other.tag == "Bomb")
 		{
-			CanJump = true;
-			
+			CanJump = true;	
+		}
+		if (other.tag == "DeathZone")
+		{
+			CanDie = true;	
 		}
 		
 	}
