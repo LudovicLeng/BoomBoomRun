@@ -8,8 +8,6 @@ public class PlayerController : MonoBehaviour {
 
 	Ray ray;
 	RaycastHit hit;
-	private bool CanJump = false;
-	private bool CanDie = false;
 
     public CharacterController controller;
     public float groundSpeed = 20;
@@ -41,17 +39,15 @@ public class PlayerController : MonoBehaviour {
         this.motion_ = Vector3.zero;
     }
 
-	void OnGUI()
+	void Update()
 	{
-		if (CanDie)
+		ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if(Physics.Raycast(ray, out hit) && Input.GetMouseButton(0))
 		{
-			GUI.Label(new Rect(10 ,10 ,100,100), "You die !");
-			if (GUI.Button(new Rect (10, 30, 100,50),"Retry"))
-			{
-				Application.LoadLevel("Model");
-			}
+			print (hit.collider.name);
 		}
 	}
+
 	
 	void LateUpdate() 
     {
@@ -73,7 +69,10 @@ public class PlayerController : MonoBehaviour {
             this.motion_.x = -this.groundSpeed;
         if (Input.GetKey(KeyCode.RightArrow)) */
             this.motion_.x = this.groundSpeed;
-		if(CanJump)
+        if (Input.GetKeyDown(KeyCode.UpArrow)) 
+		
+		ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if(Physics.Raycast(ray, out hit) && hit.collider.name == "Player" && Input.GetMouseButton(0))
 		{
             this.motion_.y = this.groundJump;
 		}
@@ -84,10 +83,10 @@ public class PlayerController : MonoBehaviour {
         this.controller.transform.Translate(this.lastHit_.transform.position - this.oldPositionOfLastHit_);
         this.motion_ = this.lastHit_.moveDirection ;
         this.motion_.y = -this.wallGravity * Time.deltaTime;
-		if(CanJump)
+		ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if(Physics.Raycast(ray, out hit) && hit.collider.name == "Player" && Input.GetMouseButton(0))
 		{
             this.motion_ = ((this.lastHit_.moveDirection * -0.5f) + Vector3.up).normalized * this.wallJump;
-			CanJump = false;
 		}
         if (Input.GetKey(KeyCode.DownArrow)) 
             this.motion_.y = -this.wallSpeed;
@@ -102,10 +101,10 @@ public class PlayerController : MonoBehaviour {
             this.motion_.x += -this.airSpeed * Time.deltaTime;
         if (Input.GetKey(KeyCode.RightArrow)) */
             this.motion_.x += this.airSpeed * Time.deltaTime;
-		if(CanJump)
+		ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if(Physics.Raycast(ray, out hit) && hit.collider.name == "Player" && Input.GetMouseButton(0))
 		{
 			this.motion_.y = this.groundJump;
-			CanJump = false;
 		}
     }
 
@@ -113,16 +112,4 @@ public class PlayerController : MonoBehaviour {
     {
         this.lastHit_ = hit;
     }
-
-	void OnTriggerEnter(Collider other) {
-		if (other.tag == "Bomb")
-		{
-			CanJump = true;	
-		}
-		if (other.tag == "DeathZone")
-		{
-			CanDie = true;	
-		}
-		
-	}
 }
